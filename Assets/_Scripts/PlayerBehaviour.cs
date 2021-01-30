@@ -6,7 +6,9 @@ public class PlayerBehaviour : MonoBehaviour
 {
 
     public float movementForce;
+    public float jumpForce;
     public Rigidbody rigidBody;
+    public bool isGrounded;
 
     // Start is called before the first frame update
     void Start()
@@ -19,18 +21,61 @@ public class PlayerBehaviour : MonoBehaviour
     //approximately updates 60 times per second = 60fps
     void Update()
     {
-        if(Input.GetAxisRaw("Horizontal") > 0)
+        if (isGrounded)
         {
-            //move to right
-            //Debug.Log("Moving Right");
-            rigidBody.AddForce(Vector3.right * movementForce);
-        }
+            if (Input.GetAxisRaw("Horizontal") > 0)
+            {
+                //move to right
+                rigidBody.AddForce(Vector3.right * movementForce);
+            }
 
-        if (Input.GetAxisRaw("Horizontal") < 0)
+            if (Input.GetAxisRaw("Horizontal") < 0)
+            {
+                //move to left
+                rigidBody.AddForce(Vector3.left * movementForce);
+            }
+
+            if (Input.GetAxisRaw("Vertical") > 0)
+            {
+                //move forward
+                rigidBody.AddForce(Vector3.forward * movementForce);
+            }
+
+            if (Input.GetAxisRaw("Vertical") < 0)
+            {
+                //move back
+                rigidBody.AddForce(Vector3.back * movementForce);
+            }
+
+            if (Input.GetAxisRaw("Jump") > 0)
+            {
+                //jump
+                rigidBody.AddForce(Vector3.up * jumpForce);
+            }
+        }
+    }
+
+    void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.CompareTag("Ground"))
         {
-            //move to left
-            //Debug.Log("Moving Left");
-            rigidBody.AddForce(Vector3.left * movementForce);
+            isGrounded = true;
+        }
+    }
+
+    void OnCollisionStay(Collision other)
+    {
+        if (other.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+        }
+    }
+
+    void OnCollisionExit(Collision other)
+    {
+        if (other.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = false;
         }
     }
 }
